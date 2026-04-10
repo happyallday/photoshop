@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using PhotoshopApp.Core.History;
 using PhotoshopApp.Core.ImageProcessing;
 using PhotoshopApp.Core.Layers;
+using PhotoshopApp.Core.Tools;
 using PhotoshopApp.Services;
 using PhotoshopApp.UI.ViewModels;
 using System.Windows;
@@ -24,10 +25,14 @@ public partial class App : Application
                 services.AddSingleton<ILayerManager, LayerManager>();
                 services.AddSingleton<IEditHistory, EditHistory>();
                 services.AddSingleton<IImageProcessor, ImageProcessor>();
+                services.AddSingleton<ToolManager>();
+                services.AddSingleton<ImageAdjuster>();
                 
                 // UI services
                 services.AddSingleton<IFileDialogService, FileDialogService>();
                 services.AddTransient<MainViewModel>();
+                services.AddTransient<ToolsViewModel>();
+                services.AddTransient<ImageAdjustmentsViewModel>();
                 services.AddTransient<MainWindow>();
             })
             .Build();

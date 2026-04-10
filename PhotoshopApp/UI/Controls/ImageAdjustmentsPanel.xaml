@@ -1,0 +1,101 @@
+<UserControl x:Class="PhotoshopApp.UI.Controls.ImageAdjustmentsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="220">
+    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                <!-- Basic Adjustments -->
+                <Expander Header="Basic Adjustments" IsExpanded="True">
+                    <StackPanel Margin="5">
+                        <!-- Brightness -->
+                        <TextBlock Text="Brightness" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Brightness}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Brightness, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                        
+                        <!-- Contrast -->
+                        <TextBlock Text="Contrast" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Contrast}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Contrast, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                        
+                        <!-- Saturation -->
+                        <TextBlock Text="Saturation" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Saturation}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Saturation, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                        
+                        <!-- Hue -->
+                        <TextBlock Text="Hue" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-180" Maximum="180" Value="{Binding Hue}" 
+                               Width="200" TickFrequency="10" Margin="0,5"/>
+                        <TextBlock Text="{Binding Hue, StringFormat={}{0}°}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                    </StackPanel>
+                </Expander>
+                
+                <!-- Light Adjustments -->
+                <Expander Header="Light Adjustments" IsExpanded="False">
+                    <StackPanel Margin="5">
+                        <!-- Exposure -->
+                        <TextBlock Text="Exposure" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Exposure}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Exposure, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                        
+                        <!-- Highlights -->
+                        <TextBlock Text="Highlights" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Highlights}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Highlights, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                        
+                        <!-- Shadows -->
+                        <TextBlock Text="Shadows" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Shadows}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Shadows, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                    </StackPanel>
+                </Expander>
+                
+                <!-- Color Balance -->
+                <Expander Header="Color Balance" IsExpanded="False">
+                    <StackPanel Margin="5">
+                        <!-- Temperature -->
+                        <TextBlock Text="Temperature" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Temperature}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Temperature, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                        
+                        <!-- Tint -->
+                        <TextBlock Text="Tint" Margin="0,5" FontWeight="SemiBold"/>
+                        <Slider Minimum="-100" Maximum="100" Value="{Binding Tint}" 
+                               Width="200" TickFrequency="5" Margin="0,5"/>
+                        <TextBlock Text="{Binding Tint, StringFormat={}{0}}" 
+                                 HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                    </StackPanel>
+                </Expander>
+                
+                <!-- Action Buttons -->
+                <Separator Margin="0,15,0,15"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Apply" Width="80" Height="25" Margin="5,0"
+                            Command="{Binding ApplyAdjustmentsCommand}" 
+                            CommandParameter="{Binding}"/>
+                    <Button Content="Reset" Width="80" Height="25" Margin="5,0"
+                            Command="{Binding ResetAdjustmentsCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

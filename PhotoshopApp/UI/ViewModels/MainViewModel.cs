@@ -5,10 +5,12 @@ using PhotoshopApp.Commands;
 using PhotoshopApp.Core.History;
 using PhotoshopApp.Core.ImageProcessing;
 using PhotoshopApp.Core.Layers;
+using PhotoshopApp.Core.Tools;
 using PhotoshopApp.Services;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
@@ -28,6 +30,13 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _imageInfo = "No image loaded";
+    
+    // Tool properties
+    [ObservableProperty]
+    private int _toolSize = 10;
+    
+    [ObservableProperty]
+    private string _currentToolName = "None";
     
     public Action<SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>>? DisplayImage { get; set; }
 
@@ -50,14 +59,20 @@ public partial class MainViewModel : ViewModelBase
     public ICommand MoveLayerDownCommand { get; }
     
     public ICommand SelectLayerCommand { get; private set; }
+    
+    // Tool-related commands
+    public ICommand SwitchToolCommand { get; }
+    
+    private readonly ToolManager _toolManager;
 
     public MainViewModel(ILayerManager layerManager, IEditHistory editHistory, 
-        IFileDialogService fileDialogService, IImageProcessor imageProcessor)
+        IFileDialogService fileDialogService, IImageProcessor imageProcessor, ToolManager toolManager)
     {
         _layerManager = layerManager;
         _editHistory = editHistory;
         _fileDialogService = fileDialogService;
         _imageProcessor = imageProcessor;
+        _toolManager = toolManager;
         
         var rotateCommand = new RotateImageCommand(layerManager, editHistory, imageProcessor);
         var flipCommand = new FlipImageCommand(layerManager, editHistory, imageProcessor);
@@ -84,6 +99,8 @@ public partial class MainViewModel : ViewModelBase
                 UpdateLayerViewModels();
             }
         });
+        
+        SwitchToolCommand = new RelayCommand<string>(ExecuteSwitchTool);
         
         _editHistory.HistoryChanged += (s, e) =>
         {
@@ -223,6 +240,23 @@ public partial class MainViewModel : ViewModelBase
         {
             var composedImage = _layerManager.Compose(new PhotoshopApp.Core.Layers.Rect(0, 0, 2000, 2000));
             DisplayImage?.Invoke(composedImage);
+        }
+    }
+    
+    private void ExecuteSwitchTool(string? toolName)
+    {
+        if (!string.IsNullOrEmpty(toolName))
+        {
+            if (Enum.TryParse<ToolType>(toolName, out var toolType))
+            {
+                _toolManager.SwitchTool(toolType);
+                var currentTool = _toolManager.CurrentTool;
+                
+                if (currentTool != null)
+                {
+                    CurrentToolName = currentTool.Name;
+                }
+            }
         }
     }
 }

@@ -1,8 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using PhotoshopApp.UI.ViewModels;
 using PhotoshopApp.Services;
 using PhotoshopApp.Core.Layers;
+using PhotoshopApp.Core.Tools;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using BlendMode = PhotoshopApp.Core.Layers.BlendMode;
@@ -12,11 +15,15 @@ namespace PhotoshopApp;
 public partial class MainWindow : System.Windows.Window
 {
     private readonly MainViewModel _viewModel;
+    private readonly ToolManager _toolManager;
+    private readonly ILayerManager _layerManager;
 
-    public MainWindow(MainViewModel viewModel)
+    public MainWindow(MainViewModel viewModel, ToolManager toolManager, ILayerManager layerManager)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _toolManager = toolManager;
+        _layerManager = layerManager;
         DataContext = viewModel;
         
         // Connect image display
@@ -26,6 +33,48 @@ public partial class MainWindow : System.Windows.Window
         
         // Populate blend modes
         PopulateBlendModes();
+    }
+    
+    public void ApplyCrop(int width, int height)
+    {
+        if (_layerManager?.ActiveLayer?.Image != null)
+        {
+            var originalImage = _layerManager.ActiveLayer.Image;
+            var croppedImage = originalImage.Clone();
+            croppedImage.Mutate(x => x.Crop(new SixLabors.ImageSharp.Rectangle(0, 0, width, height)));
+            
+            _layerManager.ActiveLayer.Image = croppedImage;
+            RefreshCanvas();
+        }
+    }
+    
+    public void ApplyTransform(double rotation, double scale)
+    {
+        if (_layerManager?.ActiveLayer?.Image != null)
+        {
+            var originalImage = _layerManager.ActiveLayer.Image;
+            var transformedImage = originalImage.Clone();
+            
+            // Apply rotation
+            if (rotation != 0)
+            {
+                transformedImage.Mutate(x => x.Rotate((float)rotation));
+            }
+            
+            // Apply scale
+            if (scale != 1.0)
+            {
+                var newWidth = (int)(transformedImage.Width * scale);
+                var newHeight = (int)(transformedImage.Height * scale);
+                if (newWidth > 0 && newHeight > 0)
+                {
+                    transformedImage.Mutate(x => x.Resize(newWidth, newHeight));
+                }
+            }
+            
+            _layerManager.ActiveLayer.Image = transformedImage;
+            RefreshCanvas();
+        }
     }
 
     private void PopulateBlendModes()
@@ -67,14 +116,25 @@ public partial class MainWindow : System.Windows.Window
         }
     }
     
-    private void BlendModeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+private void BlendModeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
         if (_viewModel.Layers.Count > 0 && _viewModel.Layers.FirstOrDefault(l => l.IsActive) is ILayerViewModel activeLayer)
         {
-            if (!activeLayer.Layer.IsLocked && BlendModeComboBox.SelectedItem is Core.Layers.BlendMode selectedMode)
+            if (!activeLayer.Layer.IsLocked && BlendModeComboBox.SelectedItem is BlendMode selectedMode)
             {
                 activeLayer.Layer.BlendMode = selectedMode;
             }
+        }
+    }
+    
+    private void RefreshCanvas()
+    {
+        if (_layerManager?.Layers.Count > 0)
+        {
+            var composedImage = _layerManager.Compose(new PhotoshopApp.Core.Layers.Rect(0, 0, 2000, 2000));
+            _viewModel.DisplayImage?.Invoke(composedImage);
+        }
+    }
         }
     }
 }

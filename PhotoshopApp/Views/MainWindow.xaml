@@ -77,26 +77,64 @@
                     <TextBlock Text="Tools" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
                     
                     <!-- Tool Buttons -->
-                    <Button Content="🖱️ Move" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="✂️ Crop" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="🖌️ Brush" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="🧽 Eraser" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="🔲 Rectangle" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="⭕ Circle" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="✏️ Text" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="🪣 Fill" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
+                    <Button Content="Move" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Move"/>
+                    <Button Content="✂️ Crop" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Crop"/>
+                    <Button Content="🖌️ Brush" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Brush"/>
+                    <Button Content="🧽 Eraser" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Eraser"/>
+                    <Button Content="🔲 Rectangle" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Rectangle"/>
+                    <Button Content="⭕ Circle" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Circle"/>
                     
                     <Separator Margin="0,15,0,15"/>
                     
+                    <TextBlock Text="Current Tool:" FontWeight="Bold" Margin="0,5" FontSize="12"/>
+                    <TextBlock Text="{Binding CurrentToolName}" Margin="0,0,0,10" Foreground="#0066CC"/>
+                    
                     <TextBlock Text="Properties" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
-                    <!-- Tool properties will be added here -->
+                    
+                    <!-- Tool Properties -->
+                    <TextBlock Text="Size:" Margin="0,5" FontSize="12"/>
+                    <Slider Minimum="1" Maximum="100" Value="{Binding ToolSize}" 
+                           Width="200" TickFrequency="1" Margin="0,5"/>
+                    <TextBlock Text="{Binding ToolSize}" HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
                 </StackPanel>
             </Border>
 
             <!-- Canvas Area -->
             <Border Grid.Column="1" Background="#333333">
                 <Grid>
-                    <controls:ImageCanvas x:Name="ImageCanvasControl"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Top toolbar for canvas -->
+                    <Border Grid.Row="0" Background="#444444" Padding="5">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Zoom: 100%" Foreground="White" Margin="10,0" VerticalAlignment="Center"/>
+                            <Separator Margin="10,0" Background="#666666"/>
+                            <TextBlock Text="Tool: " Foreground="White" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CurrentToolName}" Foreground="#00CCFF" 
+                                      VerticalAlignment="Center" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- Canvas -->
+                    <Grid Grid.Row="1">
+                        <controls:ImageCanvas x:Name="ImageCanvasControl"/>
+                    </Grid>
+                    
+                    <!-- Bottom adjustments panel -->
+                    <Expander Grid.Row="2" Header="Image Adjustments" ExpandDirection="Up" 
+                              Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0">
+                        <controls:ImageAdjustmentsPanel Height="300"/>
+                    </Expander>
                 </Grid>
             </Border>
 
