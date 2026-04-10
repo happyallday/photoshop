@@ -13,9 +13,9 @@ public class Layer : ILayer
     public double Opacity { get; set; } = 1.0;
     public BlendMode BlendMode { get; set; } = BlendMode.Normal;
     public Image<Rgba32>? Image { get; set; }
-    public System.Windows.Rect Bounds => Image != null 
-        ? new System.Windows.Rect(0, 0, Image.Width, Image.Height) 
-        : System.Windows.Rect.Empty;
+    public Rect Bounds => Image != null 
+        ? new Rect(0, 0, Image.Width, Image.Height) 
+        : Rect.Empty;
 
     public ILayer Clone()
     {
@@ -62,7 +62,7 @@ public class LayerManager : ILayerManager
         }
     }
 
-    public Image<Rgba32> Compose(System.Windows.Rect region)
+    public Image<Rgba32> Compose(Rect region)
     {
         var width = (int)region.Width;
         var height = (int)region.Height;

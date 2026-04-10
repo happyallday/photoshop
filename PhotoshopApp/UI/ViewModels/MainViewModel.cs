@@ -156,7 +156,7 @@ public partial class MainViewModel : ViewModelBase
     {
         if (_layerManager.Layers.Count > 0)
         {
-            var composedImage = _layerManager.Compose(new System.Windows.Rect(0, 0, 1000, 1000));
+            var composedImage = _layerManager.Compose(new PhotoshopApp.Core.Layers.Rect(0, 0, 1000, 1000));
             await _imageProcessor.SaveAsync(composedImage, filePath);
         }
     }
@@ -219,7 +219,7 @@ public partial class MainViewModel : ViewModelBase
     {
         if (_layerManager.Layers.Count > 0)
         {
-            var composedImage = _layerManager.Compose(new System.Windows.Rect(0, 0, 2000, 2000));
+            var composedImage = _layerManager.Compose(new PhotoshopApp.Core.Layers.Rect(0, 0, 2000, 2000));
             DisplayImage?.Invoke(composedImage);
         }
     }

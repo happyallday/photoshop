@@ -10,5 +10,5 @@ public interface ILayerManager
     void AddLayer(ILayer layer);
     void RemoveLayer(ILayer layer);
     void MoveLayer(ILayer layer, int newIndex);
-    Image<Rgba32> Compose(System.Windows.Rect region);
+    Image<Rgba32> Compose(Rect region);
 }
