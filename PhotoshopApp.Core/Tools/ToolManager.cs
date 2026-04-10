@@ -22,10 +22,25 @@ public class ToolManager
     /// </summary>
     private void RegisterDefaultTools()
     {
+        // Selection and transformation tools
         RegisterTool(new SelectionTool());
         RegisterTool(new CropTool());
         RegisterTool(new MoveTool());
         RegisterTool(new TransformTool());
+        
+        // Drawing tools
+        RegisterTool(new BrushTool());
+        RegisterTool(new EraserTool());
+        RegisterTool(new RectangleTool());
+        RegisterTool(new EllipseTool());
+        RegisterTool(new LineTool());
+        RegisterTool(new TextTool());
+        RegisterTool(new FillTool());
+        RegisterTool(new EyedropperTool());
+        
+        // Navigation tools
+        RegisterTool(new ZoomTool());
+        RegisterTool(new HandTool());
     }
     
     /// <summary>
