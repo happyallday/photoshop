@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using PhotoshopApp.Core.History;
+using PhotoshopApp.Core.Layers;
 
 namespace PhotoshopApp.Commands;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -24,13 +25,13 @@ public partial class ImageCanvas : UserControl
     public void DisplayImage(Image<Rgba32> image)
     {
         _currentBitmap = (WriteableBitmap)BitmapConverter.ToBitmapSource(image);
-        DisplayImage.Source = _currentBitmap;
+        MainImage.Source = _currentBitmap;
         PlaceholderText.Visibility = Visibility.Collapsed;
     }
 
     public void Clear()
     {
-        DisplayImage.Source = null;
+        MainImage.Source = null;
         _currentBitmap = null;
         PlaceholderText.Visibility = Visibility.Visible;
     }

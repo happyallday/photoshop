@@ -1,6 +1,7 @@
 using PhotoshopApp.Core.History;
 using PhotoshopApp.Core.ImageProcessing;
 using PhotoshopApp.Core.Layers;
+using SixLabors.ImageSharp.Processing;
 
 namespace PhotoshopApp.Commands;
 
