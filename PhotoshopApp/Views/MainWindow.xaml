@@ -117,7 +117,7 @@
                     
                     <Separator Margin="0,15,0,15"/>
                     
-                    <!-- Layers list -->
+<!-- Layers list -->
                     <Border Background="White" 
                             BorderBrush="#CCCCCC" 
                             BorderThickness="1" 
@@ -125,13 +125,70 @@
                             Width="220">
                         <ListBox ItemsSource="{Binding Layers}" 
                                  Background="Transparent"
-                                 BorderThickness="0">
+                                 BorderThickness="0"
+                                 SelectedItem="{Binding ActiveLayer, Mode=OneWayToSource}"
+                                 SelectionMode="Extended">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="Background" Value="#E3F2FD"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Margin="5">
-                                        <CheckBox IsChecked="{Binding IsVisible}" Width="20"/>
-                                        <TextBlock Text="{Binding Name}" Width="150" VerticalAlignment="Center"/>
-                                    </StackPanel>
+                                    <Border Style="{StaticResource LayerItemBorder}" 
+                                            Background="{Binding IsActive, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                        <Grid Margin="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="32"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <!-- Visibility Toggle -->
+                                            <CheckBox Grid.Column="0" 
+                                                      IsChecked="{Binding IsVisible}" 
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,4,0"
+                                                      Command="{Binding ToggleVisibilityCommand}"/>
+                                            
+                                            <!-- Thumbnail -->
+                                            <Border Grid.Column="1" 
+                                                    Width="32" Height="32" 
+                                                    Background="#EEEEEE" 
+                                                    BorderBrush="#CCCCCC" 
+                                                    BorderThickness="1"
+                                                    Margin="0,0,8,0">
+                                                <Image Source="{Binding Thumbnail}"
+                                                       Stretch="Uniform"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            </Border>
+                                            
+                                            <!-- Layer Name -->
+                                            <TextBlock Grid.Column="2" 
+                                                       Text="{Binding Name}" 
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Left"
+                                                       FontSize="12"
+                                                       Foreground="#333333"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            
+                                            <!-- Lock Indicator -->
+                                            <TextBlock Grid.Column="3" 
+                                                       Text="🔒" 
+                                                       FontSize="12"
+                                                       Visibility="{Binding IsLocked, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="4,0,0,0"/>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

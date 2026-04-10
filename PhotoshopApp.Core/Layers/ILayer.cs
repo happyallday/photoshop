@@ -9,6 +9,7 @@ public interface ILayer
     bool IsVisible { get; set; }
     double Opacity { get; set; }
     BlendMode BlendMode { get; set; }
+    bool IsLocked { get; set; }
     Image<Rgba32>? Image { get; set; }
     Rect Bounds { get; }
     ILayer Clone();

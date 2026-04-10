@@ -5,6 +5,7 @@ using PhotoshopApp.Services;
 using PhotoshopApp.Core.Layers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using BlendMode = PhotoshopApp.Core.Layers.BlendMode;
 
 namespace PhotoshopApp;
 
@@ -52,8 +53,17 @@ public partial class MainWindow : System.Windows.Window
     {
         if (_viewModel.Layers.Count > 0 && _viewModel.Layers.FirstOrDefault(l => l.IsActive) is ILayerViewModel activeLayer)
         {
-            activeLayer.Opacity = e.NewValue / 100.0;
-            OpacityValueText.Text = $"{(int)e.NewValue}%";
+            if (!activeLayer.Layer.IsLocked)
+            {
+                activeLayer.Opacity = e.NewValue / 100.0;
+                OpacityValueText.Text = $"{(int)e.NewValue}%";
+            }
+            else
+            {
+                // Revert to original opacity value
+                OpacitySlider.Value = activeLayer.Opacity * 100;
+                OpacityValueText.Text = $"{(int)(activeLayer.Opacity * 100)}%";
+            }
         }
     }
     
@@ -61,7 +71,7 @@ public partial class MainWindow : System.Windows.Window
     {
         if (_viewModel.Layers.Count > 0 && _viewModel.Layers.FirstOrDefault(l => l.IsActive) is ILayerViewModel activeLayer)
         {
-            if (BlendModeComboBox.SelectedItem is BlendMode selectedMode)
+            if (!activeLayer.Layer.IsLocked && BlendModeComboBox.SelectedItem is Core.Layers.BlendMode selectedMode)
             {
                 activeLayer.Layer.BlendMode = selectedMode;
             }

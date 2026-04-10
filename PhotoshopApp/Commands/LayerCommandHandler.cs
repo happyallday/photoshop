@@ -23,7 +23,8 @@ public class LayerCommandHandler
             Name = $"Layer {_layerManager.Layers.Count + 1}",
             IsVisible = true,
             Opacity = 1.0,
-            BlendMode = BlendMode.Normal
+            BlendMode = BlendMode.Normal,
+            IsLocked = false
         };
         
         _layerManager.AddLayer(layer);
@@ -32,7 +33,7 @@ public class LayerCommandHandler
 
     public void DeleteActiveLayer()
     {
-        if (_layerManager.ActiveLayer != null)
+        if (_layerManager.ActiveLayer != null && !_layerManager.ActiveLayer.IsLocked)
         {
             _layerManager.RemoveLayer(_layerManager.ActiveLayer);
             _updateLayersAction?.Invoke();

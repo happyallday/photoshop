@@ -1,12 +1,14 @@
 using System;
+using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PhotoshopApp.Core.Layers;
 using System.Windows.Input;
+using System.ComponentModel;
 
 namespace PhotoshopApp.UI.ViewModels;
 
-public partial class LayerViewModel : ObservableObject, ILayerViewModel
+public partial class LayerViewModel : ObservableObject, ILayerViewModel, INotifyPropertyChanged
 {
     private readonly ILayer _layer;
     private readonly ILayerManager _layerManager;
@@ -43,11 +45,27 @@ public partial class LayerViewModel : ObservableObject, ILayerViewModel
             OnPropertyChanged();
         }
     }
+    
+    public bool IsLocked
+    {
+        get => _layer.IsLocked;
+        set
+        {
+            _layer.IsLocked = value;
+            OnPropertyChanged();
+        }
+    }
 
     [ObservableProperty]
     private bool _isActive;
+    
+    [ObservableProperty]
+    private BitmapSource? _thumbnail;
 
     public ICommand SelectLayerCommand { get; }
+    public ICommand ToggleVisibilityCommand { get; }
+    public ICommand ToggleLockCommand { get; }
+    public ICommand DeleteLayerCommand { get; }
 
     public LayerViewModel(ILayer layer, ILayerManager layerManager, Action? onSelected = null)
     {
@@ -56,11 +74,48 @@ public partial class LayerViewModel : ObservableObject, ILayerViewModel
         _onSelected = onSelected ?? (() => {});
         
         SelectLayerCommand = new RelayCommand(ExecuteSelectLayer);
+        ToggleVisibilityCommand = new RelayCommand(ExecuteToggleVisibility);
+        ToggleLockCommand = new RelayCommand(ExecuteToggleLock);
+        DeleteLayerCommand = new RelayCommand(ExecuteDeleteLayer, CanExecuteDeleteLayer);
+        
+        UpdateThumbnail();
+    }
+    
+    public void UpdateThumbnail()
+    {
+        if (_layer.Image != null)
+        {
+            Thumbnail = BitmapConverter.ToBitmapSource(_layer.Image, 32, 32);
+        }
     }
 
     private void ExecuteSelectLayer()
     {
         _layerManager.ActiveLayer = _layer;
         _onSelected?.Invoke();
+    }
+    
+    private void ExecuteToggleVisibility()
+    {
+        IsVisible = !IsVisible;
+    }
+    
+    private void ExecuteToggleLock()
+    {
+        IsLocked = !IsLocked;
+    }
+    
+    private void ExecuteDeleteLayer()
+    {
+        if (!IsLocked)
+        {
+            _layerManager.RemoveLayer(_layer);
+            _onSelected?.Invoke();
+        }
+    }
+    
+    private bool CanExecuteDeleteLayer()
+    {
+        return !IsLocked;
     }
 }

@@ -9,4 +9,6 @@ public interface ILayerViewModel
     bool IsVisible { get; set; }
     double Opacity { get; set; }
     bool IsActive { get; set; }
+    bool IsLocked { get; set; }
+    System.Windows.Media.Imaging.BitmapSource? Thumbnail { get; set; }
 }
