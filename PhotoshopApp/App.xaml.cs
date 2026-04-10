@@ -26,6 +26,7 @@ public partial class App : Application
                 services.AddSingleton<IImageProcessor, ImageProcessor>();
                 
                 // UI services
+                services.AddSingleton<IFileDialogService, FileDialogService>();
                 services.AddTransient<MainViewModel>();
                 services.AddTransient<MainWindow>();
             })

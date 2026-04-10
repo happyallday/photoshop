@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:PhotoshopApp.UI.ViewModels"
+        xmlns:controls="clr-namespace:PhotoshopApp.UI.Controls"
         Title="Photoshop Clone" Height="800" Width="1200"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
@@ -31,9 +32,17 @@
                 <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGestureText="Ctrl+Y"/>
             </MenuItem>
             <MenuItem Header="_Image">
+                <MenuItem Header="_Rotate">
+                    <MenuItem Header="90° Clockwise" Command="{Binding Rotate90Command}"/>
+                    <MenuItem Header="180°" Command="{Binding Rotate180Command}"/>
+                    <MenuItem Header="90° Counter-Clockwise" Command="{Binding Rotate270Command}"/>
+                </MenuItem>
+                <MenuItem Header="_Flip">
+                    <MenuItem Header="Horizontal" Command="{Binding FlipHorizontalCommand}"/>
+                    <MenuItem Header="Vertical" Command="{Binding FlipVerticalCommand}"/>
+                </MenuItem>
                 <MenuItem Header="_Resize"/>
                 <MenuItem Header="_Crop"/>
-                <MenuItem Header="_Rotate"/>
             </MenuItem>
             <MenuItem Header="_Filter">
                 <MenuItem Header="_Blur"/>
@@ -87,21 +96,7 @@
             <!-- Canvas Area -->
             <Border Grid.Column="1" Background="#333333">
                 <Grid>
-                    <!-- Canvas placeholder -->
-                    <Border Background="White" 
-                            Margin="20" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center"
-                            Width="600" 
-                            Height="400"
-                            BorderBrush="#666666" 
-                            BorderThickness="1">
-                        <TextBlock Text="Drop image here or use File > Open" 
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center"
-                                   Foreground="#999999"
-                                   FontSize="16"/>
-                    </Border>
+                    <controls:ImageCanvas x:Name="ImageCanvasControl"/>
                 </Grid>
             </Border>
 
@@ -111,8 +106,14 @@
                     <TextBlock Text="Layers" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
                     
                     <!-- Layer controls -->
-                    <Button Content="+ Add Layer" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
-                    <Button Content="- Delete Layer" Width="220" Height="30" Margin="0,5" HorizontalAlignment="Left"/>
+                    <Button Content="+ Add Layer" Width="100" Height="30" Margin="0,5" HorizontalAlignment="Left" 
+                            Command="{Binding AddLayerCommand}"/>
+                    <Button Content="- Delete Layer" Width="100" Height="30" Margin="5,5,0,5" HorizontalAlignment="Left" 
+                            Command="{Binding DeleteLayerCommand}"/>
+                    <Button Content="↑ Move Up" Width="100" Height="30" Margin="0,5" HorizontalAlignment="Left" 
+                            Command="{Binding MoveLayerUpCommand}"/>
+                    <Button Content="↓ Move Down" Width="100" Height="30" Margin="5,5,0,5" HorizontalAlignment="Left" 
+                            Command="{Binding MoveLayerDownCommand}"/>
                     
                     <Separator Margin="0,15,0,15"/>
                     
@@ -139,7 +140,18 @@
                     <Separator Margin="0,15,0,15"/>
                     
                     <TextBlock Text="Layer Properties" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
-                    <!-- Layer properties controls will be added here -->
+                    
+                    <!-- Layer Opacity -->
+                    <TextBlock Text="Opacity:" Margin="0,5"/>
+                    <Slider x:Name="OpacitySlider" Minimum="0" Maximum="100" Value="100" 
+                            Width="220" TickFrequency="1" IsSnapToTickEnabled="False"
+                            ValueChanged="OpacitySlider_ValueChanged"/>
+                    <TextBlock x:Name="OpacityValueText" Text="100%" HorizontalAlignment="Right" Margin="0,-20,0,20"/>
+                    
+                    <!-- Blend Mode -->
+                    <TextBlock Text="Blend Mode:" Margin="0,5"/>
+                    <ComboBox x:Name="BlendModeComboBox" Width="220" Height="25" Margin="0,5" 
+                              SelectionChanged="BlendModeComboBox_SelectionChanged"/>
                 </StackPanel>
             </Border>
         </Grid>
@@ -151,7 +163,11 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
-                <TextBlock Text="{Binding Title}"/>
+                <TextBlock Text="{Binding ImagePath}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding ImageInfo}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="Zoom: 100%"/>
