@@ -36,7 +36,18 @@ public partial class MainViewModel : ViewModelBase
     private int _toolSize = 10;
     
     [ObservableProperty]
+    private int _toolHardness = 100;
+    
+    [ObservableProperty]
+    private int _toolOpacity = 100;
+    
+    [ObservableProperty]
+    private string _currentToolColorString = "#000000";
+    
+    [ObservableProperty]
     private string _currentToolName = "None";
+    
+    private System.Drawing.Color _currentToolColor = System.Drawing.Color.Black;
     
     public Action<SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>>? DisplayImage { get; set; }
 
@@ -62,8 +73,13 @@ public partial class MainViewModel : ViewModelBase
     
     // Tool-related commands
     public ICommand SwitchToolCommand { get; }
+    public ICommand ZoomInCommand { get; }
+    public ICommand ZoomOutCommand { get; }
+    public ICommand ZoomFitCommand { get; }
+    public ICommand ShowColorPickerCommand { get; }
     
     private readonly ToolManager _toolManager;
+    private ITool? _currentDrawingTool;
 
     public MainViewModel(ILayerManager layerManager, IEditHistory editHistory, 
         IFileDialogService fileDialogService, IImageProcessor imageProcessor, ToolManager toolManager)
@@ -101,6 +117,10 @@ public partial class MainViewModel : ViewModelBase
         });
         
         SwitchToolCommand = new RelayCommand<string>(ExecuteSwitchTool);
+        ZoomInCommand = new RelayCommand(ExecuteZoomIn);
+        ZoomOutCommand = new RelayCommand(ExecuteZoomOut);
+        ZoomFitCommand = new RelayCommand(ExecuteZoomFit);
+        ShowColorPickerCommand = new RelayCommand(ExecuteShowColorPicker);
         
         _editHistory.HistoryChanged += (s, e) =>
         {
@@ -250,12 +270,61 @@ public partial class MainViewModel : ViewModelBase
             if (Enum.TryParse<ToolType>(toolName, out var toolType))
             {
                 _toolManager.SwitchTool(toolType);
-                var currentTool = _toolManager.CurrentTool;
+                _currentDrawingTool = _toolManager.CurrentTool;
                 
-                if (currentTool != null)
+                if (_currentDrawingTool != null)
                 {
-                    CurrentToolName = currentTool.Name;
+                    CurrentToolName = _currentDrawingTool.Name;
+                    _currentDrawingTool.Options = new ToolOptions
+                    {
+                        Size = ToolSize,
+                        Hardness = ToolHardness,
+                        Opacity = ToolOpacity / 100f,
+                        Color = System.Drawing.ColorTranslator.FromHtml(CurrentToolColorString)
+                    };
                 }
+            }
+        }
+    }
+    
+    private void ExecuteZoomIn()
+    {
+        if (_toolManager.GetTool(ToolType.Zoom) is ZoomTool zoomTool)
+        {
+            zoomTool.ZoomIn();
+        }
+    }
+    
+    private void ExecuteZoomOut()
+    {
+        if (_toolManager.GetTool(ToolType.Zoom) is ZoomTool zoomTool)
+        {
+            zoomTool.ZoomOut();
+        }
+    }
+    
+    private void ExecuteZoomFit()
+    {
+        // Implement zoom to fit
+        if (_toolManager.GetTool(ToolType.Zoom) is ZoomTool zoomTool && 
+            _layerManager.ActiveLayer?.Image != null)
+        {
+            zoomTool.ZoomToFit(_layerManager.ActiveLayer.Image, 800, 600);
+        }
+    }
+    
+    private void ExecuteShowColorPicker()
+    {
+        // Show color picker dialog
+        var colorDialog = new System.Windows.Forms.ColorDialog();
+        if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            _currentToolColor = colorDialog.Color;
+            CurrentToolColorString = $"#{_currentToolColor.R:X2}{_currentToolColor.G:X2}{_currentToolColor.B:X2}";
+            
+            if (_currentDrawingTool != null)
+            {
+                _currentDrawingTool.Options.Color = _currentToolColor;
             }
         }
     }

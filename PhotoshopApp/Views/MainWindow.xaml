@@ -77,31 +77,67 @@
                     <TextBlock Text="Tools" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
                     
                     <!-- Tool Buttons -->
-                    <Button Content="Move" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                    <Button Content="🖱️ Move" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
                             Command="{Binding SwitchToolCommand}" CommandParameter="Move"/>
                     <Button Content="✂️ Crop" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
                             Command="{Binding SwitchToolCommand}" CommandParameter="Crop"/>
+                    <Separator Margin="0,8,0,8"/>
                     <Button Content="🖌️ Brush" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
                             Command="{Binding SwitchToolCommand}" CommandParameter="Brush"/>
                     <Button Content="🧽 Eraser" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
                             Command="{Binding SwitchToolCommand}" CommandParameter="Eraser"/>
                     <Button Content="🔲 Rectangle" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
                             Command="{Binding SwitchToolCommand}" CommandParameter="Rectangle"/>
-                    <Button Content="⭕ Circle" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
-                            Command="{Binding SwitchToolCommand}" CommandParameter="Circle"/>
+                    <Button Content="⭕ Ellipse" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Ellipse"/>
+                    <Button Content="📏 Line" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Line"/>
+                    <Separator Margin="0,8,0,8"/>
+                    <Button Content="✏️ Text" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Text"/>
+                    <Button Content="🪣 Fill" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Fill"/>
+                    <Button Content="👁️ Eyedropper" Width="100" Height="30" Margin="0,2" HorizontalAlignment="Left"
+                            Command="{Binding SwitchToolCommand}" CommandParameter="Eyedropper"/>
                     
                     <Separator Margin="0,15,0,15"/>
                     
                     <TextBlock Text="Current Tool:" FontWeight="Bold" Margin="0,5" FontSize="12"/>
-                    <TextBlock Text="{Binding CurrentToolName}" Margin="0,0,0,10" Foreground="#0066CC"/>
+                    <TextBlock Text="{Binding CurrentToolName}" Margin="0,0,0,10" Foreground="#0066CC" FontSize="14"/>
                     
                     <TextBlock Text="Properties" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
                     
                     <!-- Tool Properties -->
-                    <TextBlock Text="Size:" Margin="0,5" FontSize="12"/>
-                    <Slider Minimum="1" Maximum="100" Value="{Binding ToolSize}" 
-                           Width="200" TickFrequency="1" Margin="0,5"/>
-                    <TextBlock Text="{Binding ToolSize}" HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                    <Expander Header="Tool Settings" IsExpanded="True" Width="220">
+                        <StackPanel Margin="5">
+                            <!-- Size -->
+                            <TextBlock Text="Size:" Margin="0,5" FontSize="12"/>
+                            <Slider Minimum="1" Maximum="100" Value="{Binding ToolSize}" 
+                                   Width="200" TickFrequency="1" Margin="0,5"/>
+                            <TextBlock Text="{Binding ToolSize}" HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                            
+                            <!-- Hardness (for brush/eraser) -->
+                            <TextBlock Text="Hardness:" Margin="0,5" FontSize="12"/>
+                            <Slider Minimum="0" Maximum="100" Value="{Binding ToolHardness}" 
+                                   Width="200" TickFrequency="1" Margin="0,5"/>
+                            <TextBlock Text="{Binding ToolHardness}" HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                            
+                            <!-- Opacity -->
+                            <TextBlock Text="Opacity:" Margin="0,5" FontSize="12"/>
+                            <Slider Minimum="0" Maximum="100" Value="{Binding ToolOpacity}" 
+                                   Width="200" TickFrequency="1" Margin="0,5"/>
+                            <TextBlock Text="{Binding ToolOpacity}" HorizontalAlignment="Right" FontSize="10" Margin="0,-20,0,20"/>
+                            
+                            <!-- Color -->
+                            <TextBlock Text="Color:" Margin="0,5" FontSize="12"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <Border Width="30" Height="30" BorderBrush="#CCCCCC" BorderThickness="1" 
+                                        Background="{Binding CurrentToolColorString}"/>
+                                <Button Content="🎨" Width="30" Height="30" Margin="5,0" 
+                                        Command="{Binding ShowColorPickerCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
             </Border>
 
@@ -122,12 +158,19 @@
                             <TextBlock Text="Tool: " Foreground="White" VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding CurrentToolName}" Foreground="#00CCFF" 
                                       VerticalAlignment="Center" FontWeight="Bold"/>
+                            <Separator Margin="10,0" Background="#666666"/>
+                            <Button Content="➕ Zoom In" Width="80" Height="25" Margin="5,0"
+                                    Command="{Binding ZoomInCommand}"/>
+                            <Button Content="➖ Zoom Out" Width="80" Height="25" Margin="5,0"
+                                    Command="{Binding ZoomOutCommand}"/>
+                            <Button Content="🎯 Zoom Fit" Width="80" Height="25" Margin="5,0"
+                                    Command="{Binding ZoomFitCommand}"/>
                         </StackPanel>
                     </Border>
                     
                     <!-- Canvas -->
                     <Grid Grid.Row="1">
-                        <controls:ImageCanvas x:Name="ImageCanvasControl"/>
+                        <controls:DrawingCanvas x:Name="DrawingCanvasControl"/>
                     </Grid>
                     
                     <!-- Bottom adjustments panel -->

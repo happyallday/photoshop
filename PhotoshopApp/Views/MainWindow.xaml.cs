@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using PhotoshopApp.UI.ViewModels;
+using PhotoshopApp.UI.Controls;
 using PhotoshopApp.Services;
 using PhotoshopApp.Core.Layers;
 using PhotoshopApp.Core.Tools;
@@ -17,6 +18,8 @@ public partial class MainWindow : System.Windows.Window
     private readonly MainViewModel _viewModel;
     private readonly ToolManager _toolManager;
     private readonly ILayerManager _layerManager;
+    
+    private DrawingCanvas? _drawingCanvasControl;
 
     public MainWindow(MainViewModel viewModel, ToolManager toolManager, ILayerManager layerManager)
     {
@@ -26,6 +29,15 @@ public partial class MainWindow : System.Windows.Window
         _layerManager = layerManager;
         DataContext = viewModel;
         
+        // Find drawing canvas control
+        _drawingCanvasControl = this.FindName("DrawingCanvasControl") as DrawingCanvas;
+        if (_drawingCanvasControl != null)
+        {
+            // Subscribe to drawing canvas events
+            _drawingCanvasControl.ImageChanged += DrawingCanvasControl_ImageChanged;
+            _drawingCanvasControl.ColorPicked += DrawingCanvasControl_ColorPicked;
+        }
+        
         // Connect image display
         _viewModel.DisplayImage = DisplayImageOnCanvas;
         
@@ -33,6 +45,22 @@ public partial class MainWindow : System.Windows.Window
         
         // Populate blend modes
         PopulateBlendModes();
+    }
+    
+    private void DrawingCanvasControl_ImageChanged(object? sender, SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32> newImage)
+    {
+        // Update the current layer with the new image
+        if (_layerManager.ActiveLayer != null)
+        {
+            _layerManager.ActiveLayer.Image = newImage;
+            RefreshCanvas();
+        }
+    }
+    
+    private void DrawingCanvasControl_ColorPicked(object? sender, System.Drawing.Color color)
+    {
+        // Update current tool color
+        _viewModel.CurrentToolColorString = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
     }
     
     public void ApplyCrop(int width, int height)
