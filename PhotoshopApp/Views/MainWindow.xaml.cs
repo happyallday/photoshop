@@ -18,15 +18,18 @@ public partial class MainWindow : System.Windows.Window
     private readonly MainViewModel _viewModel;
     private readonly ToolManager _toolManager;
     private readonly ILayerManager _layerManager;
+    private readonly FiltersViewModel _filtersViewModel;
     
     private DrawingCanvas? _drawingCanvasControl;
+    private Image<Rgba32>? _currentWorkingImage;
 
-    public MainWindow(MainViewModel viewModel, ToolManager toolManager, ILayerManager layerManager)
+    public MainWindow(MainViewModel viewModel, ToolManager toolManager, ILayerManager layerManager, FiltersViewModel filtersViewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
         _toolManager = toolManager;
         _layerManager = layerManager;
+        _filtersViewModel = filtersViewModel;
         DataContext = viewModel;
         
         // Find drawing canvas control
@@ -40,6 +43,20 @@ public partial class MainWindow : System.Windows.Window
         
         // Connect image display
         _viewModel.DisplayImage = DisplayImageOnCanvas;
+        
+        // Setup filters panel
+        var filtersPanel = this.FindName("FiltersPanelControl") as FiltersPanel;
+        if (filtersPanel != null)
+        {
+            var filtersDataContext = new PhotoshopApp.UI.ViewModels.FiltersViewModel(
+                System.App.Current.Services.GetService<PhotoshopApp.Core.Filters.FilterManager>(),
+                () => ApplyCurrentFilter());
+            filtersPanel.DataContext = filtersDataContext;
+            _filtersViewModel = filtersDataContext;
+        }
+        
+        // Update filters preview when image changes
+        _viewModel.ImageLoaded += (s, e) => UpdateFiltersPreview();
         
         ImageCanvasControl.ImageDropped += ImageCanvasControl_ImageDropped;
         
@@ -160,7 +177,32 @@ private void BlendModeComboBox_SelectionChanged(object sender, System.Windows.Co
         if (_layerManager?.Layers.Count > 0)
         {
             var composedImage = _layerManager.Compose(new PhotoshopApp.Core.Layers.Rect(0, 0, 2000, 2000));
+            _currentWorkingImage = composedImage;
             _viewModel.DisplayImage?.Invoke(composedImage);
+        }
+    }
+    
+    private void UpdateFiltersPreview()
+    {
+        if (_currentWorkingImage != null && _filtersViewModel != null)
+        {
+            _filtersViewModel.UpdateFilterPreview(_currentWorkingImage);
+        }
+    }
+    
+    private void ApplyCurrentFilter()
+    {
+        if (_filtersViewModel != null && _currentWorkingImage != null)
+        {
+            var filteredImage = _filtersViewModel.ApplyCurrentFilter(_currentWorkingImage);
+            if (filteredImage != null)
+            {
+                if (_layerManager?.ActiveLayer != null)
+                {
+                    _layerManager.ActiveLayer.Image = filteredImage;
+                    RefreshCanvas();
+                }
+            }
         }
     }
         }

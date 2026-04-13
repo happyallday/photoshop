@@ -44,11 +44,22 @@
                 <MenuItem Header="_Resize"/>
                 <MenuItem Header="_Crop"/>
             </MenuItem>
-            <MenuItem Header="_Filter">
-                <MenuItem Header="_Blur"/>
-                <MenuItem Header="_Sharpen"/>
-                <MenuItem Header="_Adjustments"/>
-            </MenuItem>
+<MenuItem Header="_Filter">
+                    <MenuItem Header="_Blur"/>
+                    <MenuItem Header="_Sharpen"/>
+                    <MenuItem Header="_Artistic">
+                        <MenuItem Header="Pixelate"/>
+                        <MenuItem Header="Edge Detection"/>
+                        <MenuItem Header="Emboss"/>
+                        <MenuItem Header="Oil Painting"/>
+                    </MenuItem>
+                    <MenuItem Header="_Color">
+                        <MenuItem Header="Grayscale"/>
+                        <MenuItem Header="Sepia"/>
+                        <MenuItem Header="Invert"/>
+                        <MenuItem Header="Color Balance"/>
+                    </MenuItem>
+                </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About"/>
             </MenuItem>
@@ -177,6 +188,12 @@
                     <Expander Grid.Row="2" Header="Image Adjustments" ExpandDirection="Up" 
                               Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0">
                         <controls:ImageAdjustmentsPanel Height="300"/>
+                    </Expander>
+                    
+                    <!-- Filters panel -->
+                    <Expander Grid.Row="2" Header="Image Filters" ExpandDirection="Up" 
+                              Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0">
+                        <controls:FiltersPanel x:Name="FiltersPanelControl" Height="400"/>
                     </Expander>
                 </Grid>
             </Border>

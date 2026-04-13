@@ -27,12 +27,14 @@ public partial class App : Application
                 services.AddSingleton<IImageProcessor, ImageProcessor>();
                 services.AddSingleton<ToolManager>();
                 services.AddSingleton<ImageAdjuster>();
+                services.AddSingleton<FilterManager>();
                 
                 // UI services
                 services.AddSingleton<IFileDialogService, FileDialogService>();
                 services.AddTransient<MainViewModel>();
                 services.AddTransient<ToolsViewModel>();
                 services.AddTransient<ImageAdjustmentsViewModel>();
+                services.AddTransient<FiltersViewModel>();
                 services.AddTransient<MainWindow>();
             })
             .Build();
